@@ -356,9 +356,7 @@ class WritePolicyWithLibraryOnly(unittest.TestCase):
         # And in this test, we are trying to verify them individually to make sure they are not excluded.
         # So we will skip --minimize just for this test.
         policy = write_policy_with_template(crud_template)
-        statement_ids = []
-        for statement in policy.get("Statement"):
-            statement_ids.append(statement.get("Sid"))
+        statement_ids = [statement.get("Sid") for statement in policy.get("Statement")]
         for expected_sid in expected_statement_ids:
             self.assertTrue(expected_sid in statement_ids)
 

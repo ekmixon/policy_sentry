@@ -25,7 +25,7 @@ def translate_condition_key_data_types(condition_str):
     elif condition_str.lower() in ["ip"]:
         return "Ip"
     else:
-        raise Exception("Unknown data format: {}".format(str))
+        raise Exception(f"Unknown data format: {str}")
 
 
 def get_service_from_condition_key(condition_key):
@@ -40,8 +40,7 @@ def get_comma_separated_condition_keys(condition_keys):
     :return: result: String containing multiple condition keys, comma-separated
     """
 
-    result = condition_keys.replace("  ", ",")  # replace the double spaces with a comma
-    return result
+    return condition_keys.replace("  ", ",")
 
 
 def is_condition_key_match(document_key, some_str):

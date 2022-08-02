@@ -30,24 +30,17 @@ logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
 def header_matches(string, table):
     """checks if the string is found in the table header"""
     headers = [chomp(str(x)).lower() for x in table.find_all("th")]
-    match_found = False
-    for header in headers:
-        if string in header:
-            match_found = True
-            break
-    if not match_found:
-        return False
-    return True
+    return any(string in header for header in headers)
 
 
 def get_links_from_base_actions_resources_conditions_page():
     """Gets the links from the actions, resources, and conditions keys page, and returns their filenames."""
     html = requests.get(BASE_DOCUMENTATION_URL)
     soup = BeautifulSoup(html.content, "html.parser")
-    html_filenames = []
-    for i in soup.find("div", {"class": "highlights"}).findAll("a"):
-        html_filenames.append(i["href"])
-    return html_filenames
+    return [
+        i["href"]
+        for i in soup.find("div", {"class": "highlights"}).findAll("a")
+    ]
 
 
 def get_action_access_level_overrides_from_yml(
@@ -62,10 +55,7 @@ def get_action_access_level_overrides_from_yml(
     if not access_level_overrides_file_path:
         access_level_overrides_file_path = BUNDLED_ACCESS_OVERRIDES_FILE
     cfg = read_yaml_file(access_level_overrides_file_path)
-    if service in cfg:
-        return cfg[service]
-    else:
-        return False
+    return cfg[service] if service in cfg else False
 
 
 def update_html_docs_directory(html_docs_destination):
@@ -106,12 +96,11 @@ def update_html_docs_directory(html_docs_destination):
 
         for script in soup.find_all("script"):
             try:
-                if "src" in script.attrs:
-                    if script.get("src").startswith("/"):
-                        temp = script.attrs["src"]
-                        script.attrs["src"] = script.attrs["src"].replace(
-                            temp, f"https://docs.aws.amazon.com{temp}"
-                        )
+                if "src" in script.attrs and script.get("src").startswith("/"):
+                    temp = script.attrs["src"]
+                    script.attrs["src"] = script.attrs["src"].replace(
+                        temp, f"https://docs.aws.amazon.com{temp}"
+                    )
             except TypeError as t_e:
                 logger.warning(t_e)
                 logger.warning(script)

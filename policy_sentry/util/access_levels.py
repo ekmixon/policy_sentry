@@ -40,15 +40,8 @@ def override_access_level(service_override_config, action_name, provided_access_
         )
     # first index will contain the access level given in the override config for that action.
     # since we break the loop, we know it only contains one value.
-    if len(real_access_level) > 0:
-        # If AWS hasn't fixed their documentation yet, then our YAML override cfg will not match their documentation.
-        # Therefore, accept our override instead.
-        if real_access_level[0] != provided_access_level:
-            return real_access_level[0]
-        # Otherwise, they have fixed their documentation because our override file matches their documentation.
-        # Therefore, return false because we don't need to override
-        else:
-            return False
+    if real_access_level and real_access_level[0] != provided_access_level:
+        return real_access_level[0]
     else:
         return False
 

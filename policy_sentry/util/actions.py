@@ -27,10 +27,7 @@ def get_lowercase_action_list(action_list):
     """
     Given a list of actions, return the list but in lowercase format
     """
-    new_action_list = []
-    for action in action_list:
-        new_action_list.append(str.lower(action))
-    return new_action_list
+    return [str.lower(action) for action in action_list]
 
 
 def get_full_action_name(service, action_name):
@@ -40,5 +37,4 @@ def get_full_action_name(service, action_name):
     :param action_name: action name, like createbucket
     :return: the resulting string
     """
-    action = service + ":" + action_name
-    return action
+    return f"{service}:{action_name}"

@@ -247,7 +247,7 @@ class QueryActionsTestCase(unittest.TestCase):
             'ssm:DeleteParameters',
             'ssm:LabelParameterVersion',
             'ssm:PutParameter'
-]
+    ]
         output = get_actions_with_arn_type_and_access_level(
             "ssm", "parameter", "Write"
         )

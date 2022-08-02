@@ -70,10 +70,7 @@ def initialize(access_level_overrides_file=None, fetch=False, build=False):
     Initialize the local data file to store AWS IAM information, which can be used to generate IAM policies, and for
     querying the database.
     """
-    if not access_level_overrides_file:
-        overrides_file = LOCAL_ACCESS_OVERRIDES_FILE
-    else:
-        overrides_file = access_level_overrides_file
+    overrides_file = access_level_overrides_file or LOCAL_ACCESS_OVERRIDES_FILE
     # Create the config directory
     database_path = create_policy_sentry_config_directory()
 
@@ -92,7 +89,7 @@ def initialize(access_level_overrides_file=None, fetch=False, build=False):
         if file.endswith(".yml"):
             shutil.copy(os.path.join(BUNDLED_DATA_DIRECTORY, file), CONFIG_DIRECTORY)
             logger.debug("copying overrides file %s to %s", file, CONFIG_DIRECTORY)
-    print("Database will be stored here: " + database_path)
+    print(f"Database will be stored here: {database_path}")
 
     if not build and not fetch:
         # copy from the bundled database location to the destination path
@@ -128,10 +125,7 @@ def create_policy_sentry_config_directory():
     if os.path.exists(LOCAL_DATASTORE_FILE_PATH):
         logger.debug(f"The database at {DATASTORE_FILE_PATH} already exists. Removing and replacing it.")
         os.remove(LOCAL_DATASTORE_FILE_PATH)
-    elif os.path.exists(CONFIG_DIRECTORY):
-        pass
-    # If the config directory does not exist
-    else:
+    elif not os.path.exists(CONFIG_DIRECTORY):
         os.mkdir(CONFIG_DIRECTORY)
     return LOCAL_DATASTORE_FILE_PATH
 
@@ -144,9 +138,7 @@ def create_html_docs_directory():
     cp -r $MODULE_DIR/policy_sentry/shared/data/docs ~/.policy_sentry/data/docs
     :return:
     """
-    if os.path.exists(LOCAL_HTML_DIRECTORY_PATH):
-        pass
-    else:
+    if not os.path.exists(LOCAL_HTML_DIRECTORY_PATH):
         os.makedirs(LOCAL_HTML_DIRECTORY_PATH)
     # Copy from the existing html docs folder - the path ./policy_sentry/shared/data/docs within this repository
     logger.debug(BUNDLED_HTML_DIRECTORY_PATH)
