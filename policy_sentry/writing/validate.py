@@ -68,9 +68,7 @@ def check_actions_schema(cfg):
         return result
     else:
         raise Exception(
-            f"The provided template does not match the required schema for ACTIONS mode. "
-            f"Please use the create-template command to generate a valid YML template that "
-            f"Policy Sentry will accept."
+            'The provided template does not match the required schema for ACTIONS mode. Please use the create-template command to generate a valid YML template that Policy Sentry will accept.'
         )
 
 
@@ -83,9 +81,7 @@ def check_crud_schema(cfg):
         return result
     else:
         raise Exception(
-            f"The provided template does not match the required schema for CRUD mode. "
-            f"Please use the create-template command to generate a valid YML template that "
-            f"Policy Sentry will accept."
+            'The provided template does not match the required schema for CRUD mode. Please use the create-template command to generate a valid YML template that Policy Sentry will accept.'
         )
 
 

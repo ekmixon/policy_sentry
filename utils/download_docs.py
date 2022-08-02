@@ -5,6 +5,7 @@ We store the HTML files in this manner so that the user can be more confident in
 that it has not been altered in any way. The user can reproduce our steps with the original content at any time,
 or update the HTML files on their own.
 """
+
 import sys
 import os
 from pathlib import Path
@@ -28,7 +29,7 @@ if __name__ == '__main__':
     # BUNDLED_DATASTORE_FILE_PATH = os.path.join(
     #     str(Path(os.path.dirname(__file__))), "policy_sentry", "shared", "data", "iam-definition.json"
     # )
-    print("Data store file path: " + str(BUNDLED_DATASTORE_FILE_PATH))
+    print(f"Data store file path: {str(BUNDLED_DATASTORE_FILE_PATH)}")
     if os.path.exists(BUNDLED_DATASTORE_FILE_PATH):
         print("Datastore exists. Deleting then rebuilding...")
         os.remove(BUNDLED_DATASTORE_FILE_PATH)

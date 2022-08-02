@@ -145,22 +145,19 @@ def query_action_table(
         level = transform_access_level_text(access_level)
         output = get_actions_with_access_level(service, level)
         print_dict(output=output, fmt=fmt)
-    elif name is None and access_level and resource_type:
+    elif name is None and access_level:
         print(
             f"{service} {access_level.upper()} actions that have the resource type {resource_type.upper()}:"
         )
         access_level = transform_access_level_text(access_level)
         output = get_actions_with_arn_type_and_access_level(service, resource_type, access_level)
         print_dict(output=output, fmt=fmt)
-    # Get a list of all IAM actions under the service that support the specified condition key.
     elif condition:
         print(
             f"IAM actions under {service} service that support the {condition} condition only:"
         )
         output = get_actions_matching_condition_key(service, condition)
         print_dict(output=output, fmt=fmt)
-    # Get a list of IAM Actions under the service that only support resources = "*"
-    # (i.e., you cannot restrict it according to ARN)
     elif resource_type:
         print(
             f"IAM actions under {service} service that have the resource type {resource_type}:"

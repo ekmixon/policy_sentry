@@ -35,19 +35,19 @@ class RegisterMinimizeLengthCommand(click.Command):
     def parse_args(self, ctx, args):
         options = [o for o in ctx.command.params
                    if getattr(o, 'register_length', None)]
-        prefixes = {p for p in sum([o.opts for o in options], [])
-                    if p.startswith('--')}
+        prefixes = {
+            p for p in sum((o.opts for o in options), []) if p.startswith('--')
+        }
+
         for i, a in enumerate(args):
             a = a.split('=')
             if a[0] in prefixes:
                 if len(a) > 1:
                     args[i] = a[0]
-                    args.insert(i + 1, a[0] + '_length=' + a[1])
-                else:
-                    # check if next argument is naked
-                    if len(args) > i + 1 and not args[i + 1].startswith('--'):
-                        value = args[i + 1]
-                        args[i + 1] = a[0] + '_length=' + value
+                    args.insert(i + 1, f'{a[0]}_length={a[1]}')
+                elif len(args) > i + 1 and not args[i + 1].startswith('--'):
+                    value = args[i + 1]
+                    args[i + 1] = f'{a[0]}_length={value}'
         return super().parse_args(ctx, args)
 
 
@@ -55,7 +55,6 @@ class RegisterMinimizeLengthCommand(click.Command):
     cls=RegisterMinimizeLengthCommand,
     short_help="Write least-privilege IAM policies, restricting all actions to resource ARNs."
 )
-# pylint: disable=duplicate-code
 @click.option(
     "--input-file", "-i",
     type=str,
@@ -105,9 +104,7 @@ def write_policy(input_file, minimize, minimize_length, fmt, verbose):
             logger.critical(exc)
             sys.exit()
 
-    min_length = None
-    if minimize:
-        min_length = minimize_length
+    min_length = minimize_length if minimize else None
     policy = write_policy_with_template(cfg, min_length)
 
     if fmt == "yaml":
@@ -132,5 +129,4 @@ def write_policy_with_template(cfg, minimize=None):
         Dictionary: The JSON policy
     """
     sid_group = SidGroup()
-    policy = sid_group.process_template(cfg, minimize)
-    return policy
+    return sid_group.process_template(cfg, minimize)

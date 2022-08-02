@@ -38,11 +38,11 @@ def _get_prefixes_for_action(action):
     :return: [ "iam:", "iam:c", "iam:ca", "iam:cat" ]
     """
     (technology, permission) = action.split(":")
-    retval = ["{}:".format(technology)]
+    retval = [f"{technology}:"]
     phrase = ""
     for char in permission:
-        newphrase = "{}{}".format(phrase, char)
-        retval.append("{}:{}".format(technology, newphrase))
+        newphrase = f"{phrase}{char}"
+        retval.append(f"{technology}:{newphrase}")
         phrase = newphrase
     return retval
 
@@ -68,27 +68,19 @@ def get_denied_prefixes_from_desired(
 # https://github.com/Netflix-Skunkworks/policyuniverse/blob/master/policyuniverse/expander_minimizer.py#L111
 def check_min_permission_length(
     permission, minchars=None
-):  # pylint: disable=missing-function-docstring
+):    # pylint: disable=missing-function-docstring
     """
     Adapted version of policyuniverse's _check_permission_length. We are commenting out the skipping prefix message
     https://github.com/Netflix-Skunkworks/policyuniverse/blob/master/policyuniverse/expander_minimizer.py#L111
     """
-    if minchars and len(permission) < int(minchars) and permission != "":
-        # print(
-        #     "Skipping prefix {} because length of {}".format(
-        #         permission, len(permission)
-        #     ),
-        #     file=sys.stderr,
-        # )
-        return True
-    return False
+    return bool(minchars and len(permission) < int(minchars) and permission != "")
 
 
 # This is a condensed version of policyuniverse's minimize_statement_actions, changed for our purposes.
 # https://github.com/Netflix-Skunkworks/policyuniverse/blob/master/policyuniverse/expander_minimizer.py#L123
 def minimize_statement_actions(
     desired_actions, all_actions, minchars=None
-):  # pylint: disable=missing-function-docstring
+):    # pylint: disable=missing-function-docstring
     """
     This is a condensed version of policyuniverse's minimize_statement_actions, changed for our purposes.
     https://github.com/Netflix-Skunkworks/policyuniverse/blob/master/policyuniverse/expander_minimizer.py#L123
@@ -109,20 +101,16 @@ def minimize_statement_actions(
             if check_min_permission_length(permission, minchars=minchars):
                 continue
             # If the action name is not empty
-            if prefix not in denied_prefixes:
-                if permission != "":
-                    if prefix not in desired_actions:
-                        prefix = "{}*".format(prefix)
-                    minimized_actions.add(prefix)
-                    found_prefix = True
-                    break
+            if prefix not in denied_prefixes and permission != "":
+                if prefix not in desired_actions:
+                    prefix = f"{prefix}*"
+                minimized_actions.add(prefix)
+                found_prefix = True
+                break
 
         if not found_prefix:
             logger.debug(
                 "Could not suitable prefix. Defaulting to %s".format(prefixes[-1])
             )
             minimized_actions.add(prefixes[-1])
-    # sort the actions
-    minimized_actions_list = sorted(minimized_actions)
-
-    return minimized_actions_list
+    return sorted(minimized_actions)

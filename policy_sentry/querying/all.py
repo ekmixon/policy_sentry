@@ -17,10 +17,7 @@ def get_all_service_prefixes():
     Returns:
         List: A list of all AWS service prefixes present in the table.
     """
-    # results = [d["prefix"] for d in iam_definition]
-    results = list(set(iam_definition.keys()))
-    results.sort()
-    return results
+    return sorted(set(iam_definition.keys()))
 
 
 @functools.lru_cache(maxsize=1024)
@@ -56,5 +53,4 @@ def get_service_authorization_url(service_prefix: str) -> str:
     """
     Gets the URL to the Actions, Resources, and Condition Keys page for a particular service.
     """
-    result = iam_definition.get(service_prefix).get("service_authorization_url")
-    return result
+    return iam_definition.get(service_prefix).get("service_authorization_url")

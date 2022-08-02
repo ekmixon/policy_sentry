@@ -43,11 +43,13 @@ def get_raw_arns_for_service(service_prefix):
     Returns:
         List: A list of raw ARNs
     """
-    results = []
     service_prefix_data = get_service_prefix_data(service_prefix)
-    for resource_name, resource_data in service_prefix_data["resources"].items():
-        results.append(resource_data["arn"])
-    return results
+    return [
+        resource_data["arn"]
+        for resource_name, resource_data in service_prefix_data[
+            "resources"
+        ].items()
+    ]
 
 
 @functools.lru_cache(maxsize=1024)
@@ -60,11 +62,13 @@ def get_arn_types_for_service(service_prefix):
     Returns:
         List: A list of ARN types, like `bucket` or `object`
     """
-    results = {}
     service_prefix_data = get_service_prefix_data(service_prefix)
-    for resource_name, resource_data in service_prefix_data["resources"].items():
-        results[resource_data["resource"]] = resource_data["arn"]
-    return results
+    return {
+        resource_data["resource"]: resource_data["arn"]
+        for resource_name, resource_data in service_prefix_data[
+            "resources"
+        ].items()
+    }
 
 
 def get_arn_type_details(service_prefix, resource_type_name):
@@ -78,16 +82,20 @@ def get_arn_type_details(service_prefix, resource_type_name):
         Dictionary: Metadata about an ARN type
     """
     service_prefix_data = get_service_prefix_data(service_prefix)
-    output = {}
-    for resource_name, resource_data in service_prefix_data["resources"].items():
-        if resource_data["resource"].lower() == resource_type_name.lower():
-            output = {
+    return next(
+        (
+            {
                 "resource_type_name": resource_data["resource"],
                 "raw_arn": resource_data["arn"],
                 "condition_keys": resource_data["condition_keys"],
             }
-            break
-    return output
+            for resource_name, resource_data in service_prefix_data[
+                "resources"
+            ].items()
+            if resource_data["resource"].lower() == resource_type_name.lower()
+        ),
+        {},
+    )
 
 
 # pylint: disable=inconsistent-return-statements

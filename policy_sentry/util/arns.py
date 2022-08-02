@@ -34,7 +34,10 @@ class ARN:
             self.account = elements[4]
             self.resource = elements[5]
         except IndexError as error:
-            raise Exception("The provided ARN is invalid. IndexError: %s. Please provide a valid ARN." % error) from error
+            raise Exception(
+                f"The provided ARN is invalid. IndexError: {error}. Please provide a valid ARN."
+            ) from error
+
         if "/" in self.resource:
             self.resource, self.resource_path = self.resource.split("/", 1)
         elif ":" in self.resource:
@@ -59,8 +62,7 @@ class ARN:
         #     Case 5: resourcetype:resource
         #     Case 6: resourcetype:resource:qualifier
         split_arn = self.arn.split(":")
-        resource_string = ":".join(split_arn[5:])
-        return resource_string
+        return ":".join(split_arn[5:])
 
     def same_resource_type(self, arn_in_database):
         """Given an arn, see if it has the same resource type"""
@@ -104,11 +106,7 @@ class ARN:
         # if len(split_resource_string_to_test) != len(arn_format_list):
         #     return False
 
-        non_empty_arn_format_list = []
-        for i in arn_format_list:
-            if i != "":
-                non_empty_arn_format_list.append(i)
-
+        non_empty_arn_format_list = [i for i in arn_format_list if i != ""]
         lower_resource_string = list(map(lambda x:x.lower(),split_resource_string_to_test))
         for i in non_empty_arn_format_list:
             if i.lower() not in lower_resource_string:
@@ -121,13 +119,11 @@ class ARN:
             # table should match, backup should match,
             # and length of the arn_format_list should be the same as split_resource_string_to_test
             # If all conditions match, then the ARN format is the same.
-            if arn_format_list[i] != "":
-                if arn_format_list[i] == split_resource_string_to_test[i]:
-                    pass
-                elif split_resource_string_to_test[i] == "*":
-                    pass
-                else:
-                    return False
+            if (
+                arn_format_list[i] != ""
+                and arn_format_list[i] != split_resource_string_to_test[i] != "*"
+            ):
+                return False
 
         # 4. Special type for S3 bucket objects and CodeCommit repos
         # Note: Each service can only have one of these, so these are definitely exceptions
@@ -170,7 +166,10 @@ def parse_arn(arn):
             "resource_path": None,
         }
     except IndexError as error:
-        raise Exception("The provided ARN is invalid. IndexError: %s. Please provide a valid ARN." % error) from error
+        raise Exception(
+            f"The provided ARN is invalid. IndexError: {error}. Please provide a valid ARN."
+        ) from error
+
     if "/" in result["resource"]:
         result["resource"], result["resource_path"] = result["resource"].split("/", 1)
     elif ":" in result["resource"]:
@@ -188,10 +187,7 @@ def get_region_from_arn(arn):
     """Given an ARN, return the region in the ARN, if it is available. In certain cases like S3 it is not"""
     result = parse_arn(arn)
     # Support S3 buckets with no values under region
-    if result["region"] is None:
-        result = ""
-    else:
-        result = result["region"]
+    result = "" if result["region"] is None else result["region"]
     return result
 
 
@@ -199,10 +195,7 @@ def get_account_from_arn(arn):
     """Given an ARN, return the account ID in the ARN, if it is available. In certain cases like S3 it is not"""
     result = parse_arn(arn)
     # Support S3 buckets with no values under account
-    if result["account"] is None:
-        result = ""
-    else:
-        result = result["account"]
+    result = "" if result["account"] is None else result["account"]
     return result
 
 
@@ -223,8 +216,7 @@ def get_resource_string(arn):
         String: The resource string, like `resourcetype/resource`
     """
     split_arn = arn.split(":")
-    resource_string = ":".join(split_arn[5:])
-    return resource_string
+    return ":".join(split_arn[5:])
 
 
 # In the meantime, we have to skip this pylint check (consider this as tech debt)

@@ -25,11 +25,9 @@ def analyze_by_access_level(policy_json, access_level):
     """
     expanded_policy = get_expanded_policy(policy_json)
     requested_actions = get_actions_from_policy(expanded_policy)
-    # expanded_actions = determine_actions_to_expand(requested_actions)
-    actions_by_level = remove_actions_not_matching_access_level(
+    return remove_actions_not_matching_access_level(
         requested_actions, access_level
     )
-    return actions_by_level
 
 
 def analyze_statement_by_access_level(statement_json, access_level):
@@ -44,7 +42,6 @@ def analyze_statement_by_access_level(statement_json, access_level):
     """
     requested_actions = get_actions_from_statement(statement_json)
     expanded_actions = determine_actions_to_expand(requested_actions)
-    actions_by_level = remove_actions_not_matching_access_level(
+    return remove_actions_not_matching_access_level(
         expanded_actions, access_level
     )
-    return actions_by_level

@@ -10,22 +10,20 @@ logger = logging.getLogger(__name__)
 def get_actions_from_statement(statement):
     """Given a statement dictionary, create a list of the actions"""
     actions_list = []
-    # We only want to evaluate policies that have Effect = "Allow"
     if statement.get("Effect") == "Deny":
         return actions_list
+    action_clause = statement.get("Action")
+    if not action_clause:
+        logger.debug("No actions contained in statement")
+        return actions_list
+    # Action = "s3:GetObject"
+    if isinstance(action_clause, str):
+        actions_list.append(action_clause)
+    # Action = ["s3:GetObject", "s3:ListBuckets"]
+    elif isinstance(action_clause, list):
+        actions_list.extend(action_clause)
     else:
-        action_clause = statement.get("Action")
-        if not action_clause:
-            logger.debug("No actions contained in statement")
-            return actions_list
-        # Action = "s3:GetObject"
-        if isinstance(action_clause, str):
-            actions_list.append(action_clause)
-        # Action = ["s3:GetObject", "s3:ListBuckets"]
-        elif isinstance(action_clause, list):
-            actions_list.extend(action_clause)
-        else:
-            logger.debug("Unknown error: The 'Action' is neither a list nor a string")
+        logger.debug("Unknown error: The 'Action' is neither a list nor a string")
     return actions_list
 
 
@@ -49,9 +47,8 @@ def get_actions_from_policy(data):
     for action in actions_list:
         service, action_name = action.split(":")
         action_data = get_action_data(service, action_name)
-        if service in action_data.keys():
-            if len(action_data[service]) > 0:
-                new_actions_list.append(action_data[service][0]["action"])
+        if service in action_data.keys() and len(action_data[service]) > 0:
+            new_actions_list.append(action_data[service][0]["action"])
 
     new_actions_list.sort()
     return new_actions_list
@@ -81,13 +78,13 @@ def get_sid_names_from_policy(policy_json):
     """
     Given a Policy JSON, get a list of the Statement IDs. This is helpful in unit tests.
     """
-    sid_names = list(map(itemgetter("Sid"), policy_json.get("Statement")))
-    return sid_names
+    return list(map(itemgetter("Sid"), policy_json.get("Statement")))
 
 
 def get_statement_from_policy_using_sid(policy_json, sid):
     """
     Helper function to get a statement just by providing the policy JSON and the Statement ID
     """
-    res = next((sub for sub in policy_json["Statement"] if sub['Sid'] == sid), None)
-    return res
+    return next(
+        (sub for sub in policy_json["Statement"] if sub['Sid'] == sid), None
+    )
