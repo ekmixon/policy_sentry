@@ -9,7 +9,7 @@ chardet==4.0.0
 click==7.1.2
 contextlib2==0.6.0.post1
 coverage==5.5
-dparse==0.5.1
+dparse==0.5.2
 future==0.18.2
 gitdb==4.0.5
 GitPython==3.1.14
@@ -48,5 +48,6 @@ tornado==6.1
 tqdm==4.59.0
 typed-ast==1.4.2
 typing-extensions==3.7.4.3
-urllib3==1.26.4
+urllib3==1.26.5
 wrapt==1.12.1
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
