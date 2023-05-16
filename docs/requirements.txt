@@ -7,6 +7,7 @@ mkdocs-material==7.0.6
 mkdocs-material-extensions==1.0.1
 mkdocstrings==0.15.0
 Pygments==2.8.1
-pymdown-extensions==8.1.1
+pymdown-extensions==10.0
 pytkdocs==0.11.0
 docutils==0.16
+tornado>=6.3.2 # not directly required, pinned by Snyk to avoid a vulnerability
